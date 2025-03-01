@@ -18,4 +18,6 @@ class Discussion(models.Model):
     
     class Meta:
         ordering = ['-created_at']  # Order by newest first
+        # indexes = [models.Index(fields=['user'])]  # TODO check if this is a good idea
+
 
