@@ -1,0 +1,105 @@
+{
+	"info": {
+		"_postman_id": "34d7eb07-7ed7-4dbe-8dfb-7f11ef91758f",
+		"name": "Discussions API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "6744398"
+	},
+	"item": [
+		{
+			"name": "create discussion",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"user\": \"Kareem Sakr\",\n    \"title\": \"This is our first discussion, hip hip horray\"\n\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{api_address}}/discussions/",
+					"host": [
+						"{{api_address}}"
+					],
+					"path": [
+						"discussions",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all discussions",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8000/api/discussions/",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"discussions",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add comment",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"user\": \"Student 2\",\n    \"parent\": 3,\n    \"content\": \"I am commenting on a comment on a comment\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{api_address}}/discussions/1/comments/",
+					"host": [
+						"{{api_address}}"
+					],
+					"path": [
+						"discussions",
+						"1",
+						"comments",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get comments for discussion",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{api_address}}/discussions/1/comments",
+					"host": [
+						"{{api_address}}"
+					],
+					"path": [
+						"discussions",
+						"1",
+						"comments"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
