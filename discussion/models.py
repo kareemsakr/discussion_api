@@ -14,10 +14,10 @@ class Discussion(models.Model):
     # ]
     # status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='active')
 
-    def get_comments_flat(self):
+    def get_comments_flat(self, max_level):
         # Will use recursive common table expression to to get comments in a flat tree structure
         with connection.cursor() as cursor:
-            cursor.execute("""
+            sql_query = """
                 WITH RECURSIVE comment_tree AS (
                     -- Base case: Get all top-level comments for the discussion
                     SELECT 
@@ -47,8 +47,15 @@ class Discussion(models.Model):
                     FROM discussion_comment c
                     JOIN comment_tree ct ON c.parent_id = ct.id
                 )
-                SELECT * FROM comment_tree ORDER BY path;
-            """, [self.id])
+                SELECT * FROM comment_tree
+            """
+
+            # Add level filter if specified
+            if max_level is not None:
+                sql_query += " WHERE level <= %s"
+                cursor.execute(sql_query + " ORDER BY path;", [self.id, max_level])
+            else:
+                cursor.execute(sql_query + " ORDER BY path;", [self.id])
             
             columns = [col[0] for col in cursor.description]
             return [dict(zip(columns, row)) for row in cursor.fetchall()]

@@ -20,6 +20,7 @@ class CommentViewSet(mixins.CreateModelMixin,
                     viewsets.GenericViewSet):
     """
     API endpoint that allows retrieve all comments for a discussion and add comments to discussions or other comments.
+    Query parameters:
     """
     queryset = Comment.objects.all()
     serializer_class = FlatCommentSerializer
@@ -46,12 +47,29 @@ class CommentViewSet(mixins.CreateModelMixin,
     def discussion_comments(self, request, discussion_id=None):
         """
         Get all comments for a discussion in a flat tree structure.
+
+        - level: Integer. If specified, returns comments up to this level.
+             Level 0 returns only top-level comments.
+             Level 1 returns top-level comments and direct replies.
+             If not specified, returns all comments for the  given discussion id.
         """
 
         # Check if discussion exists
         discussion = Discussion.objects.filter(id=discussion_id).first()
         if not discussion:
             return Response({"error": "Discussion not found"}, status=404)
+        
+            # Check if level parameter is provided
+        level_param = request.query_params.get('level', None)
+        max_level = None
+        
+        if level_param is not None:
+            try:
+                max_level = int(level_param)
+                if max_level < 0:
+                    return Response({"error": "Level must be a non-negative integer"}, status=400)
+            except ValueError:
+                return Response({"error": "Level must be a valid integer"}, status=400)
             
-        flat_comments = discussion.get_comments_flat()
+        flat_comments = discussion.get_comments_flat(max_level=max_level)
         return Response(flat_comments)
