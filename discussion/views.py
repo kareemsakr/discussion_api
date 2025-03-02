@@ -1,6 +1,7 @@
 # Create your views here.
 from rest_framework import viewsets, mixins
 from .models import Discussion, Comment
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from .serializers import DiscussionSerializer, FlatCommentSerializer
 
@@ -24,6 +25,19 @@ class CommentViewSet(mixins.CreateModelMixin,
     """
     queryset = Comment.objects.all()
     serializer_class = FlatCommentSerializer
+
+    @action(detail=True, methods=['get'])
+    def replies(self, request, pk=None):
+        """
+        Get all replies to a specific comment.
+        """
+        try:
+            comment = Comment.objects.get(pk=pk)
+        except Comment.DoesNotExist:
+            return Response({"error": "Comment not found"}, status=404)
+            
+        descendants = comment.get_replies_flat()
+        return Response(descendants)
 
     def create(self, request, discussion_id=None, *args, **kwargs):
         """

@@ -4,6 +4,8 @@ from .views import DiscussionViewSet, CommentViewSet
 
 router = DefaultRouter()
 router.register(r'discussions', DiscussionViewSet)
+router.register(r'comments', CommentViewSet)
+
 
 urlpatterns = [
     path('', include(router.urls)),
