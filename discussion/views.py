@@ -27,12 +27,12 @@ class CommentViewSet(mixins.CreateModelMixin,
     serializer_class = FlatCommentSerializer
 
     @action(detail=True, methods=['get'])
-    def replies(self, request, pk=None):
+    def replies(self, request, discussion_id=None, comment_id=None):
         """
         Get all replies to a specific comment.
         """
         try:
-            comment = Comment.objects.get(pk=pk)
+            comment = Comment.objects.get(pk=comment_id, discussion_id=discussion_id)
         except Comment.DoesNotExist:
             return Response({"error": "Comment not found"}, status=404)
             
