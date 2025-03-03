@@ -1,10 +1,14 @@
 from django.db import models, connection
 
-# Create your models here.
 class Discussion(models.Model):
-    user = models.CharField(max_length=100)
-    title = models.CharField(max_length=280) # to match twitter's character count as an example
-    created_at = models.DateTimeField(auto_now_add=True)
+    """
+    Represents a discussion topic.
+    
+    A discussion can have multiple comments associated with it.
+    """
+    user = models.CharField(max_length=100, help_text="Author of the discussion")
+    title = models.CharField(max_length=280, help_text="The actual discussion topic or title") # to match twitter's character count as an example
+    created_at = models.DateTimeField(auto_now_add=True, help_text="Auto-generated timestamp of creation time")
 
     # In case we need to add the ability to delete or close disucssions
     # STATUS_CHOICES = [
@@ -17,6 +21,16 @@ class Discussion(models.Model):
 
     def get_comments_flat(self, max_level):
         # Will use recursive common table expression to to get comments in a flat tree structure
+        """
+        Get all comments for this discussion in a flat tree structure.
+        
+        Args:
+            max_level (int, optional): If provided, only returns comments up to this nesting level.
+            None returns all levels.
+        
+        Returns:
+            list: A list of dictionaries representing comments with level and path information.
+        """
         with connection.cursor() as cursor:
             sql_query = """
                 WITH RECURSIVE comment_tree AS (
@@ -70,15 +84,24 @@ class Discussion(models.Model):
 
 
 class Comment(models.Model):
-    discussion = models.ForeignKey(Discussion, on_delete=models.CASCADE, related_name='comments')
-    user = models.CharField(max_length=100)
-    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='replies')
-    content = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
+    """
+    Model representing a comment on a discussion.
+    
+    Comments can be top-level (directly on a discussion) or replies to other comments,
+    forming a tree structure.
+    """
+    discussion = models.ForeignKey(Discussion, on_delete=models.CASCADE, related_name='comments', help_text="The discussion this comment belongs to")
+    user = models.CharField(max_length=100, help_text="Author of the Comment")
+    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='replies', help_text="Foreign key of the parent comment (if it is a reply to another comment), null if it is a top level comment")
+    content = models.TextField(help_text="Body of the comment")
+    created_at = models.DateTimeField(auto_now_add=True, help_text="Time stamp of comment creation")
 
     def get_replies_flat(self):
         """
         Get all replies of this comment in a flat tree structure with path and level.
+        
+        Returns:        
+        list: A list of dictionaries representing reply comments with level and path information.
         """
         with connection.cursor() as cursor:
             cursor.execute("""

@@ -10,7 +10,9 @@ class DiscussionViewSet(mixins.CreateModelMixin,
                          mixins.ListModelMixin,
                          viewsets.GenericViewSet):
     """
-    API endpoint that allows retrieve, list and create discussions.
+    API endpoints for managing discussions.
+
+    Provides functionality to create, retrieve, and list discussions.
     """
     queryset = Discussion.objects.all()
     serializer_class = DiscussionSerializer
@@ -20,8 +22,9 @@ class CommentViewSet(mixins.CreateModelMixin,
                     mixins.RetrieveModelMixin,
                     viewsets.GenericViewSet):
     """
-    API endpoint that allows retrieve all comments for a discussion and add comments to discussions or other comments.
-    Query parameters:
+    API endpoints for managing comments.
+    
+    Provides functionality to create comments for discussions and retrieve comment replies.
     """
     queryset = Comment.objects.all()
     serializer_class = FlatCommentSerializer
@@ -29,7 +32,18 @@ class CommentViewSet(mixins.CreateModelMixin,
     @action(detail=True, methods=['get'])
     def replies(self, request, discussion_id=None, comment_id=None):
         """
-        Get all replies to a specific comment.
+        List all replies to a specific comment.
+        
+        Returns a flat list of all descendant comments (replies, replies to replies, etc.)
+        with their level and path information.
+        
+        Parameters:
+        - discussion_id: ID of the discussion the comment belongs to
+        - comment_id: ID of the comment to get replies for
+        
+        Returns:
+        - 200 OK: List of reply comments
+        - 404 Commentn not found: If the comment doesn't exist or doesn't belong to the specified discussion
         """
         try:
             comment = Comment.objects.get(pk=comment_id, discussion_id=discussion_id)
@@ -41,8 +55,22 @@ class CommentViewSet(mixins.CreateModelMixin,
 
     def create(self, request, discussion_id=None, *args, **kwargs):
         """
-        Create a comment for the specified discussion.
-        The discussion_id is taken from the URL path rather than requiring it in the request body.
+        Create a new comment for a specific discussion or another comment (reply).
+        
+        The discussion ID is taken from the URL path and automatically added to the comment.
+        To create a reply to another comment, include a 'parent' field with the parent comment ID.
+        
+        Parameters:
+        - discussion_id: ID of the discussion to add the comment to
+        
+        Request Body:
+        - user: name of the author or creator of the comment
+        - content: Text content of the comment
+        - parent: (Optional) ID of the parent comment if this is a reply
+        
+        Returns:
+        - 201 Created: Successfully created comment
+        - 400 Bad Request: Invalid request data
         """
         # Make a mutable copy of request.data
         data = request.data.copy()
@@ -60,12 +88,22 @@ class CommentViewSet(mixins.CreateModelMixin,
 
     def discussion_comments(self, request, discussion_id=None):
         """
-        Get all comments for a discussion in a flat tree structure.
+        List all comments for a specific discussion.
+        
+        Returns comments in a flat tree struture with 'path' and 'level' information.
+        Can be filtered by level using the 'level' query parameter.
 
-        - level: Integer. If specified, returns comments up to this level.
-             Level 0 returns only top-level comments.
-             Level 1 returns top-level comments and direct replies.
-             If not specified, returns all comments for the  given discussion id.
+        The 'path' variable represents the hierarchical ancestry of each comment,
+        stored as a comma separated string of comment Ids (for example: '1,3,9').
+        
+        Parameters:
+        - discussion_id: ID of the discussion to get comments for
+        - level (query): Optional. If provided, only returns comments up to this nesting level.
+          Level 0 returns only top-level comments, level 1 includes their direct replies, etc.
+        
+        Returns:
+        - 200 OK: List of comments
+        - 404 Discussion not Found: If the discussion doesn't exist
         """
 
         # Check if discussion exists
