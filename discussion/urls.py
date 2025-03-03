@@ -13,5 +13,5 @@ urlpatterns = [
      name='discussion-comments'),
     path('discussions/<int:discussion_id>/comments/<int:comment_id>/replies/', 
      CommentViewSet.as_view(({'get': 'replies'})), 
-     name='comment-comments')
+     name='comment-replies')
 ]

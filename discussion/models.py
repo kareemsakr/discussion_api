@@ -6,8 +6,8 @@ class Discussion(models.Model):
     
     A discussion can have multiple comments associated with it.
     """
-    user = models.CharField(max_length=100, help_text="Author of the discussion")
-    title = models.CharField(max_length=280, help_text="The actual discussion topic or title") # to match twitter's character count as an example
+    user = models.CharField(max_length=100, null=False, blank=False, help_text="Author of the discussion")
+    title = models.CharField(max_length=280, null=False, blank=False, help_text="The actual discussion topic or title") # to match twitter's character count as an example
     created_at = models.DateTimeField(auto_now_add=True, help_text="Auto-generated timestamp of creation time")
 
     # In case we need to add the ability to delete or close disucssions
@@ -19,7 +19,7 @@ class Discussion(models.Model):
     # status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='active')
 
 
-    def get_comments_flat(self, max_level):
+    def get_comments_flat(self, max_level=None):
         # Will use recursive common table expression to to get comments in a flat tree structure
         """
         Get all comments for this discussion in a flat tree structure.
@@ -91,9 +91,9 @@ class Comment(models.Model):
     forming a tree structure.
     """
     discussion = models.ForeignKey(Discussion, on_delete=models.CASCADE, related_name='comments', help_text="The discussion this comment belongs to")
-    user = models.CharField(max_length=100, help_text="Author of the Comment")
+    user = models.CharField(max_length=100, null=False, blank=False, help_text="Author of the Comment")
     parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='replies', help_text="Foreign key of the parent comment (if it is a reply to another comment), null if it is a top level comment")
-    content = models.TextField(help_text="Body of the comment")
+    content = models.TextField(null=False, blank=False, help_text="Body of the comment")
     created_at = models.DateTimeField(auto_now_add=True, help_text="Time stamp of comment creation")
 
     def get_replies_flat(self):
