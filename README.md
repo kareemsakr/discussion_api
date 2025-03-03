@@ -39,15 +39,21 @@ source venv/bin/activate # On Windows, use: venv\Scripts\activate
 
 #### Install dependencies:
 
-`pip install -r requirements.txt`
+```
+pip install -r requirements.txt
+```
 
 #### Apply migrations:
 
-`python manage.py migrate`
+```
+python manage.py migrate
+```
 
 #### Run the development server:
 
-`python manage.py runserver`
+```
+python manage.py runserver
+```
 
 The API will be available at http://127.0.0.1:8000/api/
 
@@ -62,25 +68,20 @@ ReDoc: http://127.0.0.1:8000/redoc/
 
 ### Discussions
 
-```
-GET /api/discussions/ - List all discussions
-POST /api/discussions/ - Create a new discussion
-GET /api/discussions/{id}/ - Retrieve a specific discussion
-```
+- GET /api/discussions/ - List all discussions
+- POST /api/discussions/ - Create a new discussion
+- GET /api/discussions/{id}/ - Retrieve a specific discussion
 
 ### Comments
 
-`GET /api/discussions/{id}/comments/ - List all comments for a discussion`
+- GET /api/discussions/{id}/comments/ - List all comments for a discussion`
 
 #### Query Parameters:
 
-`level (optional): Filter comments by nesting level (0 for top-level only, 1 for top-level and their direct replies, etc.)
-`
+- level (optional): Filter comments by nesting level (0 for top-level only, 1 for top-level and their direct replies, etc.)
 
-```
-POST /api/discussions/{id}/comments/ - Add a comment to a discussion
-GET /api/discussions/{id}/comments/{comment_id}/replies/ - Get all replies to a specific comment
-```
+- POST /api/discussions/{id}/comments/ - Add a comment to a discussion
+- GET /api/discussions/{id}/comments/{comment_id}/replies/ - Get all replies to a specific comment
 
 ## Data Models
 
@@ -115,11 +116,15 @@ GET /api/discussions/{id}/comments/{comment_id}/replies/ - Get all replies to a 
 
 Run the test suite with:
 
-`python manage.py test`
+```
+python manage.py test
+```
 
 For more detailed test output, add the verbosity flag:
 
-`python manage.py test --verbosity=2`
+```
+python manage.py test --verbosity=2
+```
 
 ## Design Decisions
 
