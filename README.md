@@ -78,10 +78,10 @@ ReDoc: http://127.0.0.1:8000/redoc/
 
 #### Query Parameters:
 
-- level (optional): Filter comments by nesting level (0 for top-level only, 1 for top-level and their direct replies, etc.)
+- level (optional): Filter comments by nesting level (0 for top-level only, 1 for top-level and their direct replies, None for all levels)
 
 - POST /api/discussions/{id}/comments/ - Add a comment to a discussion
-- GET /api/discussions/{id}/comments/{comment_id}/replies/ - Get all replies to a specific comment
+- GET /api/discussions/{id}/comments/{comment_id}/replies/ - Get all replies to a specific comment (for lazy loading on the UI)
 
 ## Data Models
 
@@ -93,11 +93,12 @@ ReDoc: http://127.0.0.1:8000/redoc/
 "user": "username",
 "title": "Discussion title",
 "created_at": "2023-01-01T12:00:00Z",
-"status": "active"
 }
 ```
 
 ### Comment
+
+Note: 'parent' is can point to another comment (which represents a reply), if null means it's a top level comment on the discussion
 
 ```
 {
