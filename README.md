@@ -129,7 +129,7 @@ python manage.py test --verbosity=2
 
 ### Postman Collection
 
-For rapid API testing, export the postman collection and environment from ./postman and run the saved calls in order. ALternatively, use the swagger page for the same result
+For rapid API testing, export the postman collection and environment from ./postman and run the saved calls in order. ALternatively, use the swagger page for the same result.
 
 ## Design Decisions
 
