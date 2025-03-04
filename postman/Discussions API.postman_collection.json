@@ -96,6 +96,33 @@
 						"discussions",
 						"1",
 						"comments"
+					],
+					"query": [
+						{
+							"key": "level",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get replies to a comment",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{api_address}}/discussions/1/comments/",
+					"host": [
+						"{{api_address}}"
+					],
+					"path": [
+						"discussions",
+						"1",
+						"comments",
+						""
 					]
 				}
 			},
