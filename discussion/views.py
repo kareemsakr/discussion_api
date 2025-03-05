@@ -4,6 +4,8 @@ from .models import Discussion, Comment
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from .serializers import DiscussionSerializer, FlatCommentSerializer
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 class DiscussionViewSet(mixins.CreateModelMixin,
                          mixins.RetrieveModelMixin,
@@ -86,6 +88,17 @@ class CommentViewSet(mixins.CreateModelMixin,
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=201, headers=headers)
 
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter(
+                'level', 
+                openapi.IN_QUERY, 
+                description="Filter comments by nesting level (0 for top-level only)", 
+                type=openapi.TYPE_INTEGER,
+                required=False
+            )
+        ]
+    )
     def discussion_comments(self, request, discussion_id=None):
         """
         List all comments for a specific discussion.
